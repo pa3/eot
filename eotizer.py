@@ -32,17 +32,25 @@ def parseNode( node, styles, previousStyle ):
             result += child.nodeValue
         elif child.nodeType == xml.dom.Node.ELEMENT_NODE:
             result += parseNode( child, styles, currentStyle )
-            if child.tagName in ['text:p','text:list','text:h']:
+            if child.tagName in ['text:p','text:list','text:h', 'text:line-break']:
                 result += "\n"
 
     if nodeStyle: result += currentStyle + previousStyle
     return result
 
+def mergeDictionaries( a, b):
+    result = a.copy()
+    result.update(b)
+    return result
+
 def parse(filepath):
     zip = zipfile.ZipFile(filepath)
-    content = xml.dom.minidom.parseString(zip.read("content.xml"))
-    styles = parseStyles(content.getElementsByTagName("style:style"));
-    return parseNode(content.getElementsByTagName("office:text")[0], styles, '')
+    stylesXml =  xml.dom.minidom.parseString(zip.read("styles.xml"))
+    contentXml = xml.dom.minidom.parseString(zip.read("content.xml"))
+    styles = mergeDictionaries(
+        parseStyles(contentXml.getElementsByTagName("style:style")),
+        parseStyles(stylesXml.getElementsByTagName("style:style")))
+    return parseNode(contentXml.getElementsByTagName("office:text")[0], styles, '')
 
 def removeEmptyStrings( input ) :
     result=[]
