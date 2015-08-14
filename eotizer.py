@@ -18,13 +18,26 @@ def parseStyles ( styles ):
                 result[name] = '{{{italic}}}'
     return result
 
+def mergeStyles (style1, style2):
+    if style1 == '{{{bold-italic}}}' or style2 == '{{{bold-italic}}}':
+	return '{{{bold-italic}}}'
+    elif style1 == '{{{bold}}}' and style2 == '{{{italic}}}':
+	return '{{{bold-italic}}}'
+    elif style1 == '{{{italic}}}' and style2 == '{{{bold}}}':
+	return '{{{bold-italic}}}'
+    elif style1 == '':
+	return style2
+    elif style2 == '':
+	return style1
+    return style1
+
 def parseNode( node, styles, previousStyle ):
     result = u''
     nodeStyle = node.getAttribute("text:style-name")
     currentStyle = ''
     if nodeStyle:
         result += previousStyle
-        if nodeStyle in styles: currentStyle = styles[nodeStyle]
+        if nodeStyle in styles: currentStyle = mergeStyles(styles[nodeStyle], previousStyle)
         result += currentStyle
 
     for child in node.childNodes:
