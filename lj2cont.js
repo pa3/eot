@@ -1,10 +1,9 @@
 var post;
 var lj2cont = {
-    convert : function(url) {
-        $("#siteloader").append("<textarea id='better-editor'></textarea>");
-        $("#siteloader").append("<button>Apply</button>").click(this.convertContent);
+    init : function() {
+        $("body").append("<textarea id='better-editor'></textarea>");
+        $("body").append("<button>Apply</button>").click(this.convertContent);
         $.getScript("http://tinymce.cachefly.net/4.2/tinymce.min.js", lj2cont.initTinyMCE);
-//        $("#siteloader").html('<object data="'+url+'">');
     },
     initTinyMCE:function(){
         tinymce.init({selector:"textarea#better-editor"});
@@ -14,28 +13,40 @@ var lj2cont = {
         $("div *", post).unwrap();
         $("img", post).remove();
 
-// !!!! strong -> <p><b><b></p>
-//        lj2cont.removeEmptyLinks(post);
-//        lj2cont.fixLinks(post);
-//        lj2cont.replaceTag(post, "em", "i");
-//        lj2cont.replaceTag(post, "h4", "h4");
-//        lj2cont.replaceTag(post, "h3", "h3");
-//        lj2cont.replaceTag(post, "i", "i");
-//        lj2cont.replaceTag(post, "b", "b");
-//        lj2cont.replaceTag(post, "p", "p");
-//        lj2cont.replaceTag(post, "u", "u");
-//        lj2cont.replaceTag(post, "strong", "b");
+        lj2cont.removeEmptyLinks(post);
+        lj2cont.fixLinks(post);
+        lj2cont.replaceTag(post, "em", "i");
+        lj2cont.replaceTag(post, "h4", "h4");
+        lj2cont.replaceTag(post, "h3", "h3");
+        lj2cont.replaceTag(post, "i", "i");
+        lj2cont.replaceTag(post, "b", "b");
+        lj2cont.replaceTag(post, "p", "p");
+        lj2cont.replaceTag(post, "u", "u");
+        lj2cont.replaceStrong(post);
         lj2cont.replaceLineBreaks(post);
-//        $(":not(a, i, b, p, h4, h3, blockquote)", post).each(function(){
-//            $(this).replaceWith($(this).contents());
-//        });
+        $(":not(a, i, b, p, h4, h3, blockquote)", post).each(function(){
+            $(this).replaceWith($(this).contents());
+        });
         
         console.debug(post);
         console.debug(post.html());
+        //$(".editable").html(post.html());
 //        $('#result').html(post);
     },
+    replaceStrong : function (post) {
+        $("strong", post).each(function() {
+            $(this).replaceWith("<b>" + $(this).html() + "</b><br/>");
+        });
+    },
     replaceLineBreaks : function (post) {
-//        $("br").first().replac
+        $("p", post).each(function(){
+            $(this).replaceWith($(this).html()+"<br/>")
+        });
+        $("br+br", post).remove();
+        $("br", post).each(function(){
+            $(this).prevUntil("p").wrap("<p></p>");
+            $(this).remove();
+        });
     },
     removeEmptyLinks : function(post) {
         $("a", post).each(function() {
