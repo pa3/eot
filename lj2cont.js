@@ -1,9 +1,9 @@
 var post;
 var lj2cont = {
     init : function() {
-        $("body").append("<div'/>");
-        $("body").append("<textarea id='better-editor'></textarea>");
-        $("body").append("<button>Apply</button>").click(this.convertContent);
+        $("body").append("<div id='better-editor-holder' style='position:fixed;bottom:0;width:100%'></div>");        
+        $("#better-editor-holder").append("<textarea id='better-editor'></textarea>");
+        $("#better-editor-holder").append("<button>Apply</button>").click(this.convertContent);
         $.getScript("http://tinymce.cachefly.net/4.2/tinymce.min.js", lj2cont.initTinyMCE);
     },
     initTinyMCE:function(){
