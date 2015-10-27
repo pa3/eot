@@ -1,7 +1,7 @@
 var post;
 var lj2cont = {
     init : function() {
-        $("body").append("<div id='better-editor-holder' style='position:fixed;bottom:0;width:100%'></div>");        
+        $("#btn_draft").parent().parent().append("<div id='better-editor-holder'></div>");        
         $("#better-editor-holder").append("<textarea id='better-editor'></textarea>");
         $("#better-editor-holder").append("<button>Apply</button>").click(this.convertContent);
         $.getScript("http://tinymce.cachefly.net/4.2/tinymce.min.js", lj2cont.initTinyMCE);
@@ -29,25 +29,22 @@ var lj2cont = {
             $(this).replaceWith($(this).contents());
         });
         
-        console.debug(post);
         console.debug(post.html());
         //$(".editable").html(post.html());
 //        $('#result').html(post);
     },
     replaceStrong : function (post) {
         $("strong", post).each(function() {
-            $(this).replaceWith("<b>" + $(this).html() + "</b><br/>");
+            $(this).replaceWith("<b>" + $(this).html() + "</b>");
         });
     },
     replaceLineBreaks : function (post) {
         $("p", post).each(function(){
             $(this).replaceWith($(this).html()+"<br/>")
         });
-        $("br+br", post).remove();
-        $("br", post).each(function(){
-            $(this).prevUntil("p").wrap("<p></p>");
-            $(this).remove();
-        });
+        var paragraphs = post.html().split("<br>");
+        post.empty();
+        $.each(paragraphs, function (i, p) { post.append($("<p>").append(p));});
     },
     removeEmptyLinks : function(post) {
         $("a", post).each(function() {
