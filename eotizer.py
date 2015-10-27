@@ -110,38 +110,54 @@ def extractModifiers( text ):
         detagedPosition+= tagedTextLen
     return result
 
+def getX( pageNumber ):
+    if pageNumber % 2 == 0:
+        return 50
+    return 40
+
 if __name__ == "__main__":
 
-    textField = scribus.getSelectedObject()
-    if scribus.getObjectType( textField ) == "TextFrame":
+    x = getX(scribus.currentPage())
+
+    headerText = scribus.createText(x, 80, 750, 30)
+    headerUnderline = scribus.createLine(x, 110, 160, 110)
+    bodyText = scribus.createText(x, 120, 750, 1030)
+    scribus.setColumns(4, bodyText)
+    scribus.setColumnGap(10, bodyText)
+    
+    if scribus.getObjectType( bodyText ) == "TextFrame":
         fileName = scribus.fileDialog("Open odt file", 'ODT files (*.odt)')
         text = removeEmptyStrings(parse(fileName))
         header = detag(header(text));
         body = body(text);
 
-        scribus.deleteText( textField )
-        scribus.insertText(lines(detag(body))[0], -1, textField)
-        scribus.setStyle("first_paragraph", textField)
+        scribus.deleteText( bodyText )
+        scribus.insertText(lines(detag(body))[0], -1, bodyText)
+        scribus.setStyle("first_paragraph", bodyText)
         
         for p in lines(detag(body))[1:]:
-            scribus.insertText("\n"+p, -1, textField)
-            scribus.setStyle("eot", textField)
+            scribus.insertText("\n"+p, -1, bodyText)
+            scribus.setStyle("eot", bodyText)
         for tag in extractModifiers( body ):
-            scribus.selectText(tag['start'], tag['length'], textField)
+            scribus.selectText(tag['start'], tag['length'], bodyText)
             if tag['tag'] == "bold":
-                scribus.setFont("Mysl Bold Cyrillic", textField)
+                scribus.setFont("Mysl Bold Cyrillic", bodyText)
             elif tag['tag'] == "italic":
-                scribus.setFont("Mysl Italic Cyrillic", textField)
+                scribus.setFont("Mysl Italic Cyrillic", bodyText)
             else:
-                scribus.setFont("Mysl BoldItalic Cyrillic", textField)
+                scribus.setFont("Mysl BoldItalic Cyrillic", bodyText)
 
-        scribus.insertText("\n"+authorName(detag(text)), -1, textField)
-        scribus.setStyle("author name", textField)
+        scribus.insertText("\n"+authorName(detag(text)), -1, bodyText)
+        scribus.setStyle("author name", bodyText)
 
-        scribus.insertText("\n"+authorEmail(detag(text)), -1, textField)
-        scribus.setStyle("author emali", textField)
+        scribus.insertText("\n"+authorEmail(detag(text)), -1, bodyText)
+        scribus.setStyle("author emali", bodyText)
 
-        scribus.hyphenateText(textField)
+        scribus.hyphenateText(bodyText)
+
+        scribus.insertText(header, -1, headerText)
+        scribus.setStyle("article header", headerText)
+
 
     else: scribus.messageBox("error", "select text frame")
 
