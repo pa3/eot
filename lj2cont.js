@@ -1,6 +1,7 @@
 var post;
 var lj2cont = {
     init : function() {
+        $("body").append("<div'/>");
         $("body").append("<textarea id='better-editor'></textarea>");
         $("body").append("<button>Apply</button>").click(this.convertContent);
         $.getScript("http://tinymce.cachefly.net/4.2/tinymce.min.js", lj2cont.initTinyMCE);
@@ -13,8 +14,6 @@ var lj2cont = {
         $("div *", post).unwrap();
         $("img", post).remove();
 
-        lj2cont.removeEmptyLinks(post);
-        lj2cont.fixLinks(post);
         lj2cont.replaceTag(post, "em", "i");
         lj2cont.replaceTag(post, "h4", "h4");
         lj2cont.replaceTag(post, "h3", "h3");
@@ -24,6 +23,8 @@ var lj2cont = {
         lj2cont.replaceTag(post, "u", "u");
         lj2cont.replaceStrong(post);
         lj2cont.replaceLineBreaks(post);
+        lj2cont.removeEmptyLinks(post);
+        lj2cont.fixLinks(post);
         $(":not(a, i, b, p, h4, h3, blockquote)", post).each(function(){
             $(this).replaceWith($(this).contents());
         });
@@ -50,7 +51,8 @@ var lj2cont = {
     },
     removeEmptyLinks : function(post) {
         $("a", post).each(function() {
-            if ($.trim($(this).attr('href')) == '') { 
+            if ($.trim($(this).attr('href')) == '' ||
+                $.trim($(this).text()) == '') { 
                 $(this).remove();
             }
         });                         
